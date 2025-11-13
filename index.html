@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>西田マネー</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Comic Sans MS", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif;
+      background: linear-gradient(135deg, #ff8a8a, #ffd76b, #7afcff);
+      background-size: 300% 300%;
+      animation: gradientMove 8s ease infinite;
+      text-align: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background-color: #ff3b3b;
+      color: white;
+      padding: 1rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 70px);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
+    }
+
+    button {
+      font-size: 1.6rem;
+      background: linear-gradient(45deg, #ff3b3b, #ff8c3b);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 20px rgba(255, 59, 59, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 59, 0.7); }
+      50% { transform: scale(1.1); box-shadow: 0 0 35px rgba(255, 150, 150, 1); }
+      100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 59, 0.7); }
+    }
+
+    button:hover:not(:disabled) {
+      transform: scale(1.15);
+      background: linear-gradient(45deg, #ff8c3b, #ff3b3b);
+    }
+
+    button:disabled {
+      background: #ccc;
+      box-shadow: none;
+      animation: none;
+      cursor: not-allowed;
+    }
+
+    .thanks {
+      font-size: 2rem;
+      color: #fff;
+      margin-top: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      display: none;
+      animation: fadeIn 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header>🌟 西田マネー 🌟</header>
+
+  <main>
+    <h1>💰 お支払いしてね 💰</h1>
+    <button id="payBtn">お支払いする</button>
+    <p class="thanks" id="thanks">✨ ありがとう！ ✨</p>
+    <audio id="sound" src="sound.mp3"></audio>
+  </main>
+
+  <script>
+    const btn = document.getElementById('payBtn');
+    const sound = document.getElementById('sound');
+    const thanks = document.getElementById('thanks');
+    const KEY = 'paid_time';
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+
+    function checkStatus() {
+      const lastPaid = localStorage.getItem(KEY);
+      if (!lastPaid) return;
+      const now = Date.now();
+      const elapsed = now - parseInt(lastPaid);
+      if (elapsed < ONE_DAY) {
+        btn.disabled = true;
+        btn.textContent = 'お支払い済み';
+        thanks.style.display = 'block';
+      } else {
+        localStorage.removeItem(KEY);
+      }
+    }
+
+    checkStatus();
+
+    btn.addEventListener('click', async () => {
+      try {
+        await sound.play();
+        localStorage.setItem(KEY, Date.now().toString());
+        btn.disabled = true;
+        btn.textContent = 'お支払い済み';
+        thanks.style.display = 'block';
+      } catch {
+        alert('音が再生できませんでした。');
+      }
+    });
+  </script>
+</body>
+</html>
